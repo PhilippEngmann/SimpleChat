@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -12,25 +13,34 @@
             font: 18px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             color: #444;
         }
-        h1, h2, h3 {
+
+        h1,
+        h2,
+        h3 {
             line-height: 1.2;
-        }        #chat {
+        }
+
+        #chat {
             padding: 10px;
             margin: 20px 0;
             background: #f9f9f9;
             white-space: pre-wrap;
         }
+
         .message {
             margin: 10px 0;
             padding: 5px 0;
             border-bottom: 1px solid #ddd;
         }
+
         .user {
             font-weight: bold;
         }
+
         .assistant {
             color: #333;
         }
+
         #input {
             width: 100%;
             padding: 10px;
@@ -38,6 +48,7 @@
             border: 2px solid #444;
             box-sizing: border-box;
         }
+
         button {
             margin-top: 10px;
             padding: 10px 20px;
@@ -47,19 +58,24 @@
             border: none;
             cursor: pointer;
         }
+
         button:hover {
             background: #333;
         }
+
         button:disabled {
             background: #999;
             cursor: not-allowed;
         }
+
         #api-key-section {
             margin: 20px 0;
             padding: 20px;
             border: 2px solid #000;
         }
-        #api-key, #model {
+
+        #api-key,
+        #model {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -67,10 +83,12 @@
             border: 1px solid #000;
             box-sizing: border-box;
         }
+
         .error {
             color: #c00;
             font-weight: bold;
         }
+
         #conversation-controls {
             margin-bottom: 20px;
             padding: 15px;
@@ -81,6 +99,7 @@
             align-items: center;
             flex-wrap: wrap;
         }
+
         #conversation-list {
             flex: 1;
             min-width: 200px;
@@ -88,32 +107,46 @@
             font-size: 14px;
             border: 1px solid #000;
         }
+
         #conversation-controls button {
             margin: 0;
             padding: 8px 12px;
             font-size: 14px;
         }
+
         #delete-btn {
             background: #c00;
         }
+
         #delete-btn:hover {
             background: #900;
         }
+
         #delete-btn:disabled {
             background: #999;
         }
-        
+
         /* Streaming animation */
         #streaming-content::after {
             content: '▌';
             animation: blink 1s infinite;
             color: #666;
         }
-        
+
         @keyframes blink {
-            0%, 50% { opacity: 1; }
-            51%, 100% { opacity: 0; }
-        }        /* Branch button styles */
+
+            0%,
+            50% {
+                opacity: 1;
+            }
+
+            51%,
+            100% {
+                opacity: 0;
+            }
+        }
+
+        /* Branch button styles */
         .branch-btn {
             margin-left: 10px;
             padding: 2px 6px;
@@ -125,16 +158,17 @@
             cursor: pointer;
             visibility: hidden;
         }
-        
+
         .branch-btn:hover {
             background: #777;
         }
-        
+
         .message:hover .branch-btn {
             visibility: visible;
         }
     </style>
 </head>
+
 <body>
     <header>
         <h1>SimpleChat</h1>
@@ -148,16 +182,19 @@
         <button onclick="saveConfig()">Save</button>
     </div>
 
-    <div id="chat-section" style="display:none;">        <div id="conversation-controls">
+    <div id="chat-section" style="display:none;">
+        <div id="conversation-controls">
             <button onclick="newConversation()">New Conversation</button>
             <select id="conversation-list" onchange="switchConversation()">
                 <option value="0">Conversation 1</option>
             </select>
             <button onclick="renameConversation()">Rename</button>
             <button onclick="deleteConversation()" id="delete-btn">Delete</button>
-        </div><p>Model: <strong id="current-model"></strong> <button onclick="changeModel()">Change</button></p>
+        </div>
+        <p>Model: <strong id="current-model"></strong> <button onclick="changeModel()">Change</button></p>
         <div id="chat"></div>
-        <input type="text" id="input" placeholder="Type your message here" onkeypress="if(event.key==='Enter')sendMessage()">
+        <input type="text" id="input" placeholder="Type your message here"
+            onkeypress="if(event.key==='Enter')sendMessage()">
         <button id="send-btn" onclick="sendMessage()">Send</button>
     </div>
 
@@ -167,14 +204,14 @@
         let conversations = JSON.parse(localStorage.getItem('conversations')) || [{ id: 0, name: 'Conversation 1', messages: [] }];
         let currentConversationId = parseInt(localStorage.getItem('currentConversationId')) || 0;
         let nextConversationId = parseInt(localStorage.getItem('nextConversationId')) || 1;
-        
+
         if (apiKey) {
             document.getElementById('api-key-section').style.display = 'none';
             document.getElementById('chat-section').style.display = 'block';
             document.getElementById('current-model').textContent = model;
             loadConversations();
             loadCurrentConversation();
-        }        function saveConfig() {
+        } function saveConfig() {
             const key = document.getElementById('api-key').value;
             const modelName = document.getElementById('model').value;
             if (!key) {
@@ -194,7 +231,7 @@
             document.getElementById('current-model').textContent = model;
             loadConversations();
             loadCurrentConversation();
-        }        function changeModel() {
+        } function changeModel() {
             const newModel = prompt('Enter new model name:', model);
             if (newModel && newModel.trim()) {
                 model = newModel.trim();
@@ -243,20 +280,20 @@
                 messages = [...currentConv.messages];
                 displayMessages();
             }
-        }        function displayMessages() {
+        } function displayMessages() {
             const chat = document.getElementById('chat');
             chat.innerHTML = '';
             messages.forEach((msg, index) => {
                 const messageDiv = document.createElement('div');
                 messageDiv.className = 'message';
-                
+
                 let messageHTML = `<span class="${msg.role}">${msg.role === 'user' ? 'You' : 'AI'}:</span> ${msg.content}`;
-                
+
                 // Add branch button for AI messages
                 if (msg.role === 'assistant') {
                     messageHTML += ` <button class="branch-btn" onclick="branchConversation(${index})" title="Create new conversation from this point">Branch</button>`;
                 }
-                
+
                 messageDiv.innerHTML = messageHTML;
                 chat.appendChild(messageDiv);
             });
@@ -305,12 +342,12 @@
                 loadCurrentConversation();
                 saveConversations();
             }
-        }        function deleteConversation() {
+        } function deleteConversation() {
             if (conversations.length <= 1) {
                 alert('Cannot delete the last conversation');
                 return;
             }
-            
+
             const currentConv = conversations.find(c => c.id === currentConversationId);
             if (confirm(`Delete "${currentConv.name}"?`)) {
                 conversations = conversations.filter(c => c.id !== currentConversationId);
@@ -339,30 +376,30 @@
         function branchConversation(messageIndex) {
             // Get messages up to and including the selected message
             const branchMessages = messages.slice(0, messageIndex + 1);
-            
+
             // Create a name for the branched conversation
             const currentConv = conversations.find(c => c.id === currentConversationId);
             const branchName = prompt('Enter name for branched conversation:', `${currentConv.name} (Branch)`);
-            
+
             if (branchName && branchName.trim()) {
                 saveCurrentConversation(); // Save current state
-                
+
                 // Create new conversation with messages up to the branch point
                 const newConv = {
                     id: nextConversationId,
                     name: branchName.trim(),
                     messages: [...branchMessages]
                 };
-                
+
                 conversations.push(newConv);
                 currentConversationId = nextConversationId;
                 nextConversationId++;
                 messages = [...branchMessages];
-                
+
                 saveConversations();
                 loadConversations();
                 displayMessages();
-                
+
                 // Show a message indicating the branch was created
                 const chat = document.getElementById('chat');
                 const branchNotice = document.createElement('div');
@@ -380,24 +417,24 @@
             const chat = document.getElementById('chat');
             const messageDiv = document.createElement('div');
             messageDiv.className = 'message';
-            
+
             let messageHTML = `<span class="${role}">${role === 'user' ? 'You' : 'AI'}:</span> ${content}`;
-            
+
             // Add branch button for AI messages
             if (role === 'assistant') {
                 const messageIndex = shouldSave ? messages.length : messages.length - 1;
                 messageHTML += ` <button class="branch-btn" onclick="branchConversation(${messageIndex})" title="Create new conversation from this point">Branch</button>`;
             }
-            
+
             messageDiv.innerHTML = messageHTML;
             chat.appendChild(messageDiv);
             chat.scrollTop = chat.scrollHeight;
-            
+
             if (shouldSave) {
-                messages.push({role: role, content: content});
+                messages.push({ role: role, content: content });
                 saveCurrentConversation();
             }
-        }        async function sendMessage() {
+        } async function sendMessage() {
             const input = document.getElementById('input');
             const message = input.value.trim();
             if (!message) return;
@@ -477,10 +514,10 @@
                         }
                     }
                 }                // Save the complete response
-                messages.push({role: 'assistant', content: fullResponse});
+                messages.push({ role: 'assistant', content: fullResponse });
                 saveCurrentConversation();
                 streamingContent.removeAttribute('id'); // Remove the ID to avoid conflicts
-                
+
                 // Add branch button to the completed streaming message
                 const messageIndex = messages.length - 1;
                 const branchBtn = document.createElement('button');
@@ -496,7 +533,9 @@
                 messageDiv.remove();
                 addMessage('assistant', `<span class="error">Error: ${error.message}</span>`, false);
                 throw error;
-            }        }
+            }
+        }
     </script>
 </body>
+
 </html>
