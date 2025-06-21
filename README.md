@@ -16,7 +16,8 @@ A minimal, single-file HTML chat interface for AI models via OpenRouter API.
 - Long document support
 - Image handling
 - Code block execution
-- Reasoning traces
+- Reasoning configuration and traces
 - Tool calls
 - Sticky UI elements
 - Server-side conversation storage
+- Conversation history search
